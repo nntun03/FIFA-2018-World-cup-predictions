@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Homepage</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>My Homepage</h1>
+    </header>
+    <main>
+        <div id="tabs-container">
+            <button class="tab-button active">Home</button>
+            <button id="add-tab-button">+</button>
+        </div>
+        <div id="content-container">
+            <div class="tab-content active" data-tab-id="tab-home">
+                <div class="controls-container">
+                    <form class="add-link-form">
+                        <input type="text" name="linkName" placeholder="Link Name" required>
+                        <input type="url" name="linkUrl" placeholder="https://example.com" required>
+                        <button type="submit">Add Link</button>
+                    </form>
+                    <button class="create-folder-button">Create Folder</button>
+                </div>
+                <div class="links-container">
+                    <!-- Saved links will appear here -->
+                </div>
+            </div>
+        </div>
+    </main>
+    <script src="script.js"></script>
+</body>
+</html>
