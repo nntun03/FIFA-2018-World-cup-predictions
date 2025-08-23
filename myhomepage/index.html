@@ -8,29 +8,33 @@
 </head>
 <body>
     <header>
+        <div class="theme-switcher">
+            <button class="theme-button theme-blue" data-theme="theme-default"></button>
+            <button class="theme-button theme-red" data-theme="theme-red"></button>
+            <button class="theme-button theme-green" data-theme="theme-green"></button>
+        </div>
         <h1>My Homepage</h1>
     </header>
-    <main>
-        <div id="tabs-container">
-            <button class="tab-button active">Home</button>
-            <button id="add-tab-button">+</button>
-        </div>
-        <div id="content-container">
-            <div class="tab-content active" data-tab-id="tab-home">
-                <div class="controls-container">
-                    <form class="add-link-form">
-                        <input type="text" name="linkName" placeholder="Link Name" required>
-                        <input type="url" name="linkUrl" placeholder="https://example.com" required>
-                        <button type="submit">Add Link</button>
-                    </form>
-                    <button class="create-folder-button">Create Folder</button>
+    <div id="page-container">
+        <main id="main-container">
+            <div id="left-column">
+                <div id="top-tab-system" class="tab-system">
+                    <div class="tab-buttons-container"></div>
+                    <div class="tab-contents-container"></div>
                 </div>
-                <div class="links-container">
-                    <!-- Saved links will appear here -->
+                <div id="bottom-tab-system" class="tab-system">
+                    <div class="tab-buttons-container"></div>
+                    <div class="tab-contents-container"></div>
                 </div>
             </div>
-        </div>
-    </main>
+            <div id="right-column">
+                <div class="dashboard-placeholder">
+                    <h2>Dashboard</h2>
+                    <p>This area is for your charts and other content.</p>
+                </div>
+            </div>
+        </main>
+    </div>
     <script src="script.js"></script>
 </body>
 </html>
