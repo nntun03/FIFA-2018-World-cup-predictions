@@ -1,248 +1,167 @@
 document.addEventListener('DOMContentLoaded', () => {
     // --- DOM Element References ---
-    const topTabSystem = document.getElementById('top-tab-system');
-    const bottomTabSystem = document.getElementById('bottom-tab-system');
-    const header = document.querySelector('header');
+    const linksContainer = document.querySelector('.links-container');
+    const controlsContainer = document.querySelector('.controls-container');
 
-    // --- State ---
-    let appState = {};
-    let clickTimer = null; // For differentiating single/double clicks
+    let draggedItem = null;
+
+    // --- Event Handlers ---
+    function handleDoubleClick(event) {
+        window.open(this.href, '_blank');
+    }
+
+    function handleSingleClick(event) {
+        event.preventDefault();
+    }
+
+    function handleContextMenu(event) {
+        event.preventDefault();
+        const itemType = this.classList.contains('folder-item') ? 'folder' : 'link';
+        if (confirm(`Are you sure you want to delete this ${itemType}?`)) {
+            this.remove();
+            saveState();
+        }
+    }
+
+    // --- Listener Attachment ---
+    function addListenersToElement(element) {
+        element.addEventListener('contextmenu', handleContextMenu);
+
+        // Only add click listeners to links, not folders
+        if (element.classList.contains('link-item')) {
+            element.addEventListener('dblclick', handleDoubleClick);
+            element.addEventListener('click', handleSingleClick);
+        }
+    }
 
     // --- Core Functions ---
+    function addLink(form) {
+        const linkName = form.elements.linkName.value;
+        const linkUrl = form.elements.linkUrl.value;
+        const faviconUrl = `https://t1.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=${encodeURIComponent(linkUrl)}`;
+
+        const linkItem = document.createElement('a');
+        linkItem.href = linkUrl;
+        linkItem.target = '_blank';
+        linkItem.className = 'link-item';
+        linkItem.draggable = true;
+        linkItem.innerHTML = `<img src="${faviconUrl}" alt=""><span>${linkName}</span>`;
+
+        addListenersToElement(linkItem);
+        linksContainer.appendChild(linkItem);
+        form.reset();
+        saveState();
+    }
+
+    function createFolder() {
+        const folderName = prompt('Enter a name for the new folder:');
+        if (folderName) {
+            const folderItem = document.createElement('div');
+            folderItem.className = 'folder-item';
+            folderItem.innerHTML = `
+                <div class="folder-header"><span class="folder-name">${folderName}</span></div>
+                <div class="folder-content"></div>`;
+
+            addListenersToElement(folderItem);
+            linksContainer.appendChild(folderItem);
+            saveState();
+        }
+    }
+
+    // --- Drag and Drop Handlers (Delegated) ---
+    function handleDragStart(event) {
+        if (event.target.closest('.link-item')) {
+            draggedItem = event.target.closest('.link-item');
+            setTimeout(() => draggedItem.classList.add('dragging'), 0);
+        }
+    }
+
+    function handleDragEnd() {
+        if (draggedItem) {
+            draggedItem.classList.remove('dragging');
+            draggedItem = null;
+        }
+    }
+
+    function handleDragOver(event) {
+        const dropTarget = event.target.closest('.folder-content, .links-container');
+        if (dropTarget && draggedItem && !dropTarget.contains(draggedItem)) {
+            event.preventDefault();
+            dropTarget.classList.add('drag-over');
+        }
+    }
+
+    function handleDragLeave(event) {
+        const dropTarget = event.target.closest('.folder-content, .links-container');
+        if (dropTarget) {
+            dropTarget.classList.remove('drag-over');
+        }
+    }
+
+    function handleDrop(event) {
+        const dropTarget = event.target.closest('.folder-content, .links-container');
+        if (dropTarget) {
+            event.preventDefault();
+            dropTarget.classList.remove('drag-over');
+            if (draggedItem) {
+                dropTarget.appendChild(draggedItem);
+                saveState();
+            }
+        }
+    }
+
+    // --- Data Persistence ---
     function saveState() {
-        localStorage.setItem('myHomepageState_DualTabs', JSON.stringify(appState));
+        const state = { linksHTML: linksContainer.innerHTML };
+        localStorage.setItem('myHomepageState', JSON.stringify(state));
     }
 
     function loadState() {
-        const savedState = localStorage.getItem('myHomepageState_DualTabs');
+        const savedState = localStorage.getItem('myHomepageState');
         if (savedState) {
-            appState = JSON.parse(savedState);
-        } else {
-            // Initialize default state
-            appState.top = createDefaultSystemState('top');
-            appState.bottom = createDefaultSystemState('bottom');
-            appState.theme = 'theme-default'; // Default blue theme
-        }
-    }
-
-    function applyTheme() {
-        document.body.className = appState.theme || 'theme-default';
-    }
-
-    function createDefaultSystemState(prefix) {
-        const state = { tabs: [], links: {}, activeTabId: `${prefix}-tab-1` };
-        for (let i = 1; i <= 10; i++) {
-            const tabId = `${prefix}-tab-${i}`;
-            state.tabs.push({ id: tabId, name: `Tab ${i}` });
-            state.links[tabId] = [];
-        }
-        return state;
-    }
-
-    function renderSystem(systemKey, systemElement) {
-        const systemState = appState[systemKey];
-        const tabButtonsContainer = systemElement.querySelector('.tab-buttons-container');
-        const tabContentsContainer = systemElement.querySelector('.tab-contents-container');
-
-        tabButtonsContainer.innerHTML = '';
-        systemState.tabs.forEach(tab => {
-            const button = document.createElement('button');
-            button.className = 'tab-button';
-            button.dataset.tabId = tab.id;
-            if (tab.id === systemState.activeTabId) button.classList.add('active');
-
-            const nameSpan = document.createElement('span');
-            nameSpan.className = 'tab-name';
-            nameSpan.textContent = tab.name;
-            button.appendChild(nameSpan);
-
-            const deleteButton = document.createElement('button');
-            deleteButton.className = 'delete-tab-button';
-            deleteButton.textContent = 'X';
-            button.appendChild(deleteButton);
-
-            tabButtonsContainer.appendChild(button);
-        });
-
-        const addTabButton = document.createElement('button');
-        addTabButton.className = 'add-tab-button';
-        addTabButton.textContent = '+';
-        tabButtonsContainer.appendChild(addTabButton);
-
-        tabContentsContainer.innerHTML = '';
-        systemState.tabs.forEach(tab => {
-            const content = document.createElement('div');
-            content.className = 'tab-content';
-            if (tab.id === systemState.activeTabId) content.classList.add('active');
-
-            const linksList = document.createElement('div');
-            linksList.className = 'links-list';
-
-            (systemState.links[tab.id] || []).forEach(link => {
-                linksList.appendChild(createLinkElement(link));
-            });
-
-            const addUrlInput = document.createElement('input');
-            addUrlInput.type = 'url';
-            addUrlInput.className = 'add-url-in-tab';
-            addUrlInput.placeholder = 'Paste URL & Press Enter...';
-
-            content.appendChild(linksList);
-            content.appendChild(addUrlInput);
-            tabContentsContainer.appendChild(content);
-        });
-    }
-
-    function createLinkElement(link) {
-        const linkItem = document.createElement('a');
-        linkItem.href = link.url;
-        linkItem.className = 'link-item';
-        linkItem.dataset.linkId = link.id;
-
-        const faviconUrl = `https://t1.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=${encodeURIComponent(link.url)}`;
-
-        linkItem.innerHTML = `
-            <img src="${faviconUrl}" alt="">
-            <span>${link.url}</span>
-            <button class="delete-button">X</button>
-        `;
-        return linkItem;
-    }
-
-    function getSystemFromEvent(e) {
-        const systemElement = e.target.closest('.tab-system');
-        return systemElement ? { key: systemElement.id.split('-')[0], element: systemElement } : null;
-    }
-
-    // --- Event Handlers ---
-    function handleSystemClick(e) {
-        const systemInfo = getSystemFromEvent(e);
-        if (!systemInfo) return;
-        const { key, element } = systemInfo;
-
-        if (e.target.classList.contains('add-tab-button')) {
-            const newTabId = `${key}-tab-${Date.now()}`;
-            appState[key].tabs.push({ id: newTabId, name: `Tab ${appState[key].tabs.length + 1}` });
-            appState[key].links[newTabId] = [];
-            appState[key].activeTabId = newTabId;
-            saveState();
-            renderSystem(key, element);
-            return;
-        }
-
-        if (e.target.classList.contains('delete-tab-button')) {
-            const tabId = e.target.parentElement.dataset.tabId;
-            if (confirm(`Delete tab?`)) {
-                appState[key].tabs = appState[key].tabs.filter(t => t.id !== tabId);
-                delete appState[key].links[tabId];
-                if (appState[key].activeTabId === tabId) {
-                    appState[key].activeTabId = appState[key].tabs.length > 0 ? appState[key].tabs[0].id : null;
+            try {
+                const state = JSON.parse(savedState);
+                if (state && typeof state.linksHTML === 'string') {
+                    linksContainer.innerHTML = state.linksHTML;
+                } else {
+                    linksContainer.innerHTML = '';
                 }
-                saveState();
-                renderSystem(key, element);
+            } catch (e) {
+                console.error("Error parsing myHomepageState from localStorage", e);
+                linksContainer.innerHTML = '';
             }
-            return;
         }
-
-        if (e.target.classList.contains('delete-button')) {
-            const linkItem = e.target.closest('.link-item');
-            const linkId = linkItem.dataset.linkId;
-            const activeTabId = appState[key].activeTabId;
-            if (confirm(`Delete link ${linkItem.href}?`)) {
-                appState[key].links[activeTabId] = appState[key].links[activeTabId].filter(l => l.id !== linkId);
-                saveState();
-                renderSystem(key, element);
-            }
-            return;
-        }
-
-        const tabButton = e.target.closest('.tab-button');
-        if (tabButton) {
-            clearTimeout(clickTimer);
-            clickTimer = setTimeout(() => {
-                appState[key].activeTabId = tabButton.dataset.tabId;
-                saveState();
-                renderSystem(key, element);
-            }, 250);
-        }
+        // Re-attach listeners to all loaded elements
+        document.querySelectorAll('.link-item, .folder-item').forEach(addListenersToElement);
     }
 
-    function handleSystemKeydown(e) {
-        if (e.key !== 'Enter' || !e.target.classList.contains('add-url-in-tab')) return;
-        const systemInfo = getSystemFromEvent(e);
-        if (!systemInfo) return;
-        const { key, element } = systemInfo;
-
-        const input = e.target;
-        let url = input.value.trim();
-        if (!url) return;
-
-        try {
-            if (!url.startsWith('http')) url = 'https://' + url;
-            new URL(url);
-            const newLink = { id: `link-${Date.now()}`, url };
-            appState[key].links[appState[key].activeTabId].push(newLink);
-            saveState();
-            renderSystem(key, element);
-        } catch (error) {
-            alert("Invalid URL.");
-        }
-    }
-
-    function handleSystemDblClick(e) {
-        if (!e.target.classList.contains('tab-name')) return;
-        clearTimeout(clickTimer); // Cancel single-click action
-
-        const systemInfo = getSystemFromEvent(e);
-        if (!systemInfo) return;
-        const { key, element } = systemInfo;
-
-        const nameSpan = e.target;
-        const tabId = nameSpan.parentElement.dataset.tabId;
-        const currentName = nameSpan.textContent;
-
-        const input = document.createElement('input');
-        input.type = 'text';
-        input.value = currentName;
-        input.className = 'tab-name-input';
-
-        nameSpan.replaceWith(input);
-        input.focus();
-        input.select();
-
-        const saveRename = () => {
-            let newName = input.value.trim() || "Untitled";
-            if (newName.length > 12) newName = newName.substring(0, 12);
-            const tab = appState[key].tabs.find(t => t.id === tabId);
-            if (tab) tab.name = newName;
-            saveState();
-            renderSystem(key, element);
-        };
-
-        input.addEventListener('blur', saveRename);
-        input.addEventListener('keydown', (ev) => {
-            if (ev.key === 'Enter') saveRename();
-            if (ev.key === 'Escape') renderSystem(key, element);
-        });
-    }
-
-    function handleThemeClick(e) {
-        const themeButton = e.target.closest('.theme-button');
-        if (themeButton) {
-            appState.theme = themeButton.dataset.theme;
-            saveState();
-            applyTheme();
-        }
-    }
-
-    // --- Initial Setup & Event Listeners ---
+    // --- Initial Setup ---
     loadState();
-    applyTheme();
-    renderSystem('top', topTabSystem);
-    renderSystem('bottom', bottomTabSystem);
 
-    header.addEventListener('click', handleThemeClick);
-    document.getElementById('left-column').addEventListener('click', handleSystemClick);
-    document.getElementById('left-column').addEventListener('keydown', handleSystemKeydown);
-    document.getElementById('left-column').addEventListener('dblclick', handleSystemDblClick);
+    // Attach delegated and static listeners
+    controlsContainer.addEventListener('submit', (e) => {
+        if (e.target.classList.contains('add-link-form')) {
+            e.preventDefault();
+            addLink(e.target);
+        }
+    });
+
+    controlsContainer.addEventListener('click', (e) => {
+        if (e.target.classList.contains('create-folder-button')) {
+            createFolder();
+        }
+    });
+
+    linksContainer.addEventListener('dragstart', handleDragStart);
+    linksContainer.addEventListener('dragend', handleDragEnd);
+    linksContainer.addEventListener('dragover', handleDragOver);
+    linksContainer.addEventListener('dragleave', handleDragLeave);
+    linksContainer.addEventListener('drop', handleDrop);
+
+    document.getElementById('clear-data-button').addEventListener('click', () => {
+        if (confirm('Are you sure you want to clear ALL local data? This action cannot be undone.')) {
+            localStorage.removeItem('myHomepageState');
+            location.reload();
+        }
+    });
 });

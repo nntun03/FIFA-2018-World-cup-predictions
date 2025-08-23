@@ -23,7 +23,7 @@ body {
 
 header {
     text-align: center;
-    padding: 8px; /* Thinner header */
+    padding: 20px;
     text-transform: uppercase;
     letter-spacing: 4px;
     color: var(--color-primary);
@@ -36,47 +36,22 @@ header {
     position: relative;
 }
 
-.theme-switcher {
+#clear-data-button {
     position: absolute;
-    left: 20px;
-    display: flex;
-    gap: 10px;
-}
-
-.theme-button {
-    width: 18px;
-    height: 18px;
-    border-radius: 50%;
-    border: 1px solid var(--color-surface);
-    cursor: pointer;
-    transition: all 0.2s ease;
-}
-
-.theme-button.theme-blue {
-    background-color: var(--color-primary);
-    box-shadow: 0 0 8px var(--color-primary);
-}
-
-.theme-button.theme-red {
+    right: 20px;
     background-color: var(--color-tertiary);
+    color: var(--color-text);
+    border: 1px solid var(--color-tertiary);
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    opacity: 0.7;
+}
+
+#clear-data-button:hover {
+    opacity: 1;
     box-shadow: 0 0 8px var(--color-tertiary);
-}
-
-.theme-button.theme-green {
-    background-color: var(--color-glow-green);
-    box-shadow: 0 0 8px var(--color-glow-green);
-}
-
-.theme-button:hover {
-    transform: scale(1.2);
-}
-
-.theme-red .theme-button.theme-red,
-.theme-green .theme-button.theme-green,
-.theme-default .theme-button.theme-blue {
-    box-shadow: 0 0 8px currentColor;
-    border-color: white;
-    transform: scale(1.2);
 }
 
 #page-container {
@@ -97,239 +72,19 @@ header {
     border: 1px solid var(--color-primary);
     border-radius: 16px;
     box-shadow: 0 0 15px var(--color-primary);
-    display: flex;
 }
 
 #left-column {
-    flex: 0 0 36%;
+    flex: 0 0 30%;
+    display: flex;
     flex-direction: column;
-    gap: 20px; /* Space between the two tab systems */
 }
 
 #right-column {
     flex: 1;
-    align-items: center;
-    justify-content: center;
-}
-
-.tab-system {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-    flex: 1; /* Each system takes half the space */
-    min-height: 0; /* Important for flex children */
-    border: 1px solid var(--color-surface);
-    padding: 15px;
-    border-radius: 8px;
-    box-shadow: inset 0 0 10px rgba(0,0,0,0.5); /* More pronounced outline */
-}
-
-/* --- THEME OVERRIDES --- */
-.theme-red {
-    --color-primary: var(--color-tertiary);
-}
-
-.theme-green {
-    --color-primary: var(--color-glow-green);
-}
-
-.tab-buttons-container {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    border-bottom: 1px solid var(--color-surface);
-    padding-bottom: 15px;
-}
-
-.tab-button {
-    position: relative;
-    flex-grow: 1;
-    padding: 10px 5px;
-    border: 1px solid transparent;
-    border-radius: 4px;
-    background-color: var(--color-surface);
-    color: var(--color-text-muted);
-    cursor: pointer;
-    text-align: center;
-    transition: all 0.2s ease;
     display: flex;
     align-items: center;
     justify-content: center;
-}
-
-.tab-name {
-    flex-grow: 1;
-}
-
-.delete-tab-button {
-    position: absolute;
-    top: 2px;
-    right: 2px;
-    width: 16px;
-    height: 16px;
-    border-radius: 50%;
-    border: none;
-    background-color: rgba(0,0,0,0.2);
-    color: var(--color-text-muted);
-    cursor: pointer;
-    z-index: 1;
-    opacity: 0;
-    pointer-events: none;
-    transition: all 0.2s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    line-height: 1;
-    font-size: 10px;
-}
-
-.tab-button:hover .delete-tab-button {
-    opacity: 1;
-    pointer-events: auto;
-}
-
-.delete-tab-button:hover {
-    background-color: var(--color-tertiary);
-    color: white;
-}
-
-#add-tab-button {
-    flex-grow: 0;
-    flex-shrink: 0;
-    width: 40px;
-    padding: 10px 5px;
-    border: 1px dashed var(--color-text-muted);
-    border-radius: 4px;
-    background-color: transparent;
-    color: var(--color-text-muted);
-    cursor: pointer;
-    transition: all 0.2s ease;
-    font-size: 20px;
-}
-
-#add-tab-button:hover {
-    background-color: var(--color-surface);
-    color: var(--color-primary);
-    border-color: var(--color-primary);
-}
-
-.tab-button.active {
-    background-color: var(--color-primary);
-    color: var(--color-background);
-    font-weight: bold;
-    box-shadow: 0 0 8px var(--color-primary);
-}
-
-.tab-button:not(.active):hover {
-    border-color: var(--color-primary);
-}
-
-.tab-contents-container {
-    flex-grow: 1;
-    position: relative;
-    min-height: 0;
-}
-
-.tab-content {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    opacity: 0;
-    visibility: hidden;
-    transition: opacity 0.2s ease;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
-.tab-content.active {
-    opacity: 1;
-    visibility: visible;
-    z-index: 1;
-}
-
-.links-list {
-    flex-grow: 1;
-    overflow-y: auto;
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-}
-.links-list::-webkit-scrollbar {
-    display: none;
-}
-
-.link-item {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 8px;
-    border-radius: 4px;
-    text-decoration: none;
-    color: var(--color-text);
-}
-
-.link-item:hover {
-    background-color: var(--color-surface);
-}
-
-.link-item img {
-    width: 24px;
-    height: 24px;
-    flex-shrink: 0;
-}
-
-.link-item span {
-    flex-grow: 1;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.delete-button {
-    background: none;
-    border: none;
-    color: var(--color-text-muted);
-    cursor: pointer;
-    font-size: 16px;
-    padding: 0 5px;
-}
-.delete-button:hover {
-    color: var(--color-tertiary);
-}
-
-.add-url-in-tab {
-    width: 100%;
-    box-sizing: border-box;
-    padding: 10px;
-    border: 1px dashed var(--color-surface);
-    background-color: var(--color-background);
-    color: var(--color-text);
-    border-radius: 4px;
-    font-size: 14px;
-    text-align: center;
-    margin-top: auto;
-}
-
-.add-url-in-tab:focus {
-    outline: none;
-    border-style: solid;
-    border-color: var(--color-secondary);
-}
-
-.tab-name-input {
-    width: 100%;
-    height: 100%;
-    box-sizing: border-box;
-    background-color: var(--color-background);
-    color: var(--color-text);
-    border: 1px solid var(--color-primary);
-    border-radius: 4px;
-    text-align: center;
-    font-family: inherit;
-    font-size: inherit;
-    padding: 10px 5px;
 }
 
 .dashboard-placeholder {
@@ -345,4 +100,180 @@ header {
     flex-direction: column;
     align-items: center;
     justify-content: center;
+}
+
+.links-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 20px;
+    overflow-y: auto;
+    flex-grow: 1;
+    padding: 10px;
+    background-color: rgba(0,0,0,0.2);
+    border-radius: 8px;
+}
+
+.controls-container {
+    padding-top: 20px;
+    border-top: 1px solid var(--color-surface);
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.add-link-form {
+    display: flex;
+    gap: 10px;
+    flex-grow: 1;
+}
+
+.add-link-form input[type="text"],
+.add-link-form input[type="url"] {
+    flex-grow: 1;
+    min-width: 50px;
+    padding: 10px;
+    border: 1px solid var(--color-surface);
+    background-color: var(--color-background);
+    color: var(--color-text);
+    border-radius: 4px;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.5);
+}
+
+.add-link-form input[type="text"]:focus,
+.add-link-form input[type="url"]:focus {
+    outline: none;
+    border-color: var(--color-secondary);
+    box-shadow: 0 0 5px var(--color-secondary), inset 0 1px 3px rgba(0,0,0,0.5);
+}
+
+.add-link-form button,
+.create-folder-button {
+    padding: 10px 15px;
+    border: none;
+    background: var(--color-primary);
+    color: var(--color-background);
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+}
+
+.add-link-form button:hover,
+.create-folder-button:hover {
+    box-shadow: 0 0 10px var(--color-primary);
+    transform: scale(1.03);
+}
+
+.create-folder-button {
+    background-color: var(--color-secondary);
+}
+
+.create-folder-button:hover {
+    box-shadow: 0 0 10px var(--color-secondary);
+}
+
+.link-item, .folder-item {
+    transition: all 0.3s ease;
+    transform-style: preserve-3d;
+}
+
+.link-item:hover, .folder-item:hover {
+    transform: perspective(500px) rotateY(5deg) scale(1.05);
+    z-index: 10;
+}
+
+.link-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    color: var(--color-text);
+    padding: 15px;
+    border-radius: 6px;
+    background-color: var(--color-surface);
+    border: 1px solid transparent;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.4);
+}
+
+.link-item img {
+    width: 48px;
+    height: 48px;
+    border-radius: 4px;
+}
+
+.link-item span {
+    font-size: 14px;
+    text-align: center;
+    word-break: break-word;
+}
+
+.folder-item {
+    display: flex;
+    flex-direction: column;
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-surface);
+    border-radius: 8px;
+    padding: 10px;
+    width: 120px;
+    height: 120px;
+    justify-content: space-between;
+    box-shadow: 0 0 10px var(--color-glow-green), 0 2px 5px rgba(0,0,0,0.4);
+}
+
+.folder-header {
+    color: var(--color-glow-green);
+    text-transform: uppercase;
+    font-weight: bold;
+    letter-spacing: 1px;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding-bottom: 5px;
+    border-bottom: 1px solid var(--color-surface);
+    text-shadow: 0 0 3px var(--color-glow-green);
+}
+
+.folder-content {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 5px;
+    flex-grow: 1;
+    padding-top: 5px;
+}
+
+.folder-content .link-item {
+    width: auto;
+    height: auto;
+    padding: 2px;
+    gap: 2px;
+    box-shadow: none;
+}
+
+.folder-content .link-item:hover {
+    transform: none;
+}
+
+.folder-content .link-item img {
+    width: 24px;
+    height: 24px;
+}
+
+.folder-content .link-item span {
+    display: none;
+}
+
+.link-item.dragging {
+    opacity: 0.4;
+}
+
+.folder-content.drag-over, .links-container.drag-over {
+    background-color: rgba(79, 0, 188, 0.2);
+    border: 1px dashed var(--color-secondary);
 }
