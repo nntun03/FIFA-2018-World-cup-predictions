@@ -24,7 +24,7 @@ body {
 
 header {
     text-align: center;
-    padding: 8px; /* Thinner header */
+    padding: 6px; /* 20% thinner header */
     text-transform: uppercase;
     letter-spacing: 4px;
     color: var(--color-primary);
@@ -83,6 +83,17 @@ header {
     animation-iteration-count: infinite;
     animation-timing-function: ease-in-out;
     /* animation-duration is set by JS */
+}
+
+#clock {
+    position: absolute;
+    right: 30px;
+    font-family: inherit;
+    font-size: 2em; /* Match h1 */
+    font-weight: bold;
+    letter-spacing: 4px;
+    color: var(--color-tertiary);
+    text-shadow: 0 0 8px var(--color-tertiary);
 }
 
 .theme-switcher {
