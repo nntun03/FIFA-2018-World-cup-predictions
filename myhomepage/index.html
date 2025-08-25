@@ -8,28 +8,31 @@
 </head>
 <body>
     <header>
+        <div class="theme-switcher">
+            <button class="theme-button theme-blue" data-theme="theme-default"></button>
+            <button class="theme-button theme-red" data-theme="theme-red"></button>
+            <button class="theme-button theme-green" data-theme="theme-green"></button>
+        </div>
+        <img src="https://jules.google/docs/_astro/logo.CRRa4vtC.svg" alt="Jules Secondary Logo" id="logo2">
+        <img src="https://jules.google/docs/_astro/logo.CRRa4vtC.svg" alt="Jules Logo" id="logo">
         <h1>My Homepage</h1>
-        <button id="clear-data-button" title="Clear all local data">Clear Data</button>
     </header>
     <div id="page-container">
         <main id="main-container">
             <div id="left-column">
-                <div class="links-container">
-                    <!-- Saved links and folders will appear here -->
+                <div id="top-tab-system" class="tab-system">
+                    <div class="tab-buttons-container"></div>
+                    <div class="tab-contents-container"></div>
                 </div>
-                <div class="controls-container">
-                    <form class="add-link-form">
-                        <input type="text" name="linkName" placeholder="Name" required>
-                        <input type="url" name="linkUrl" placeholder="URL" required>
-                        <button type="submit">Add</button>
-                    </form>
-                    <button class="create-folder-button">Folder +</button>
+                <div id="bottom-tab-system" class="tab-system">
+                    <div class="tab-buttons-container"></div>
+                    <div class="tab-contents-container"></div>
                 </div>
             </div>
             <div id="right-column">
                 <div class="dashboard-placeholder">
                     <h2>Dashboard</h2>
-                    <p>Embedded charts and other content will appear here.</p>
+                    <p>This area is for your charts and other content.</p>
                 </div>
             </div>
         </main>
